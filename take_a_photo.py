@@ -2,6 +2,7 @@ import time, os
 import numpy as np
 import open3d as o3d
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def save_each_photo_seperately(depth_list, color_list, time_list, overwrite=True):
@@ -17,6 +18,7 @@ def save_each_photo_seperately(depth_list, color_list, time_list, overwrite=True
             number = str(counter).zfill(5)
             plt.imsave("color_frames/" + number + "_" + str(time_inner) + "_color.png", color)
             plt.imsave("depth_frames/" + number + "_" + str(time_inner) + "_depth.png", depth)
+            np.save("depth_frames/" + number + "_" + str(time_inner) + "_depth_data.npy", depth)
             counter += 1
 
     else:
@@ -34,7 +36,9 @@ def save_each_photo_seperately(depth_list, color_list, time_list, overwrite=True
             number = str(counter).zfill(5)
             plt.imsave(time_stamp + "/color_frames/" + number + "_" + str(time_inner) + "_color.png", color)
             plt.imsave(time_stamp + "/depth_frames/" + number + "_" + str(time_inner) + "_depth.png", depth)
+            np.save(time_stamp + "/depth_frames/" + number + "_" + str(time_inner) + "_depth_data.npy", depth)
             counter += 1
+
 
 
 
@@ -49,6 +53,12 @@ class AzureKinect:
 
     def start(self):
         self.sensor = o3d.io.AzureKinectSensor(o3d.io.read_azure_kinect_sensor_config("config_test.txt"))
+
+        #print(o3d.camera.PinholeCameraIntrinsicParameters())
+        #o3d.io.write_pinhole_camera_intrinsics("parameters.txt", o3d.io.AzureKinectSensorConfig())
+
+        #write_pinhole_camera_intrinsics('file.json', pinholeCameraInstance)
+
         if not self.sensor.connect(self.device):
             raise RuntimeError('Failed to connect to sensor')
 
@@ -80,7 +90,7 @@ class AzureKinect:
                 intrinsic = o3d.camera.PinholeCameraIntrinsic(1280, 720, 601.1693115234375, 600.85931396484375, 637.83624267578125, 363.8018798828125)
                 depth = o3d.geometry.Image(depth)
                 img = o3d.geometry.Image(color)
-                rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(img, depth, depth_scale=1000, convert_rgb_to_intensity=False)
+                rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(img, depth, depth_scale=20, convert_rgb_to_intensity=False)
 
                 pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic)
             else:
@@ -104,6 +114,7 @@ class AzureKinect:
         depth_list, color_list, pcd_list, time_list = cam.take_photo(just_single=True, add_pcd=True)
         plt.imsave("color.png", color_list[0])
         plt.imsave("depth.png", depth_list[0])
+        np.save('depth_data.npy', depth_list[0])
         o3d.io.write_point_cloud("POINT_CLOUD.ply", pcd_list[0])
 
 

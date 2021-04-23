@@ -5,3 +5,4 @@ This is a very simple python script which allows the user to get a Color Image, 
 The Azure Kinect SDK has to be installed. 
 
 
+<img src="images/AzureKinect_Sensor.jpg" alt="" width="400" />
