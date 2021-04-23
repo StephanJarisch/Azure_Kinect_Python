@@ -39,25 +39,15 @@ def save_each_photo_seperately(depth_list, color_list, time_list, overwrite=True
             np.save(time_stamp + "/depth_frames/" + number + "_" + str(time_inner) + "_depth_data.npy", depth)
             counter += 1
 
-
-
-
 class AzureKinect:
     def __init__(self):
         self.config = o3d.io.AzureKinectSensorConfig()
 
-        #o3d.io.write_azure_kinect_sensor_config('standard_config.txt', self.config)
-        #o3d.io.write_azure_kinect_sensor_config('own_config_confirm.txt', o3d.io.read_azure_kinect_sensor_config("own_config.txt"))
         self.device = 0
         self.align_depth_to_color = 1
 
     def start(self):
-        self.sensor = o3d.io.AzureKinectSensor(o3d.io.read_azure_kinect_sensor_config("config_test.txt"))
-
-        #print(o3d.camera.PinholeCameraIntrinsicParameters())
-        #o3d.io.write_pinhole_camera_intrinsics("parameters.txt", o3d.io.AzureKinectSensorConfig())
-
-        #write_pinhole_camera_intrinsics('file.json', pinholeCameraInstance)
+        self.sensor = o3d.io.AzureKinectSensor(o3d.io.read_azure_kinect_sensor_config("config.txt"))
 
         if not self.sensor.connect(self.device):
             raise RuntimeError('Failed to connect to sensor')
@@ -69,7 +59,6 @@ class AzureKinect:
             if rgbd is None:
                 continue
             color, depth = np.asarray(rgbd.color).astype(np.uint8), np.asarray(rgbd.depth).astype(np.float32)
-
 
     def take_photo(self, add_pcd=False, just_single=True, number_of_photos=10):
         depth_list = []
@@ -125,5 +114,6 @@ if __name__ == "__main__":
     cam = AzureKinect()
     cam.start()
     cam.single_triade()
+
     #depth_list, color_list, pcd_list, time_list = cam.take_photo(just_single=False, number_of_photos=2)
     #save_each_photo_seperately(depth_list, color_list, time_list, overwrite=False)
