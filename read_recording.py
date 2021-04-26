@@ -21,7 +21,7 @@ reader = o3d.io.AzureKinectMKVReader()
 reader.open("test.mkv")
 print(reader.get_metadata().stream_length_usec)
 
-save_to_images = True
+save_to_images = False
 file_to_save = "mkv_images"
 if save_to_images:
     if not os.path.exists(file_to_save):
@@ -42,11 +42,10 @@ while True:
         cv2.imshow("depth", depth)
         cv2.waitKey(1)
 
-
-        plt.imsave(file_to_save + 'depth_png_' + str(counter).zfill(5) + '.png', depth)
-        np.save(file_to_save + 'depth_' + str(counter).zfill(5) + '.npy', depth)
-
-        plt.imsave(file_to_save + 'color_' + str(counter).zfill(5) + '.png', color)
+        if save_to_images:
+            plt.imsave(file_to_save + 'depth_png_' + str(counter).zfill(5) + '.png', depth)
+            np.save(file_to_save + 'depth_' + str(counter).zfill(5) + '.npy', depth)
+            plt.imsave(file_to_save + 'color_' + str(counter).zfill(5) + '.png', color)
         counter += 1
 
     except Exception as e:
